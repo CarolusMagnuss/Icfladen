@@ -212,54 +212,6 @@ namespace Icfladen
             
         }
 
-
-        private void TreeButton_Click_1(object sender, EventArgs e)
-        {
-            try
-            {
-                // SECTION 1. Create a DOM Document and load the XML data into it.
-                XmlDocument dom = new XmlDocument();
-                dom.Load(Application.StartupPath + "\\sample.xml");
-
-                // SECTION 2. Initialize the TreeView control.
-                ICFTree.Nodes.Clear();
-                ICFTree.Nodes.Add(new TreeNode(dom.DocumentElement.Name));
-                TreeNode tNode = new TreeNode();
-                tNode = ICFTree.Nodes[0];
-
-                // SECTION 3. Populate the TreeView with the DOM nodes.
-                AddNode(dom.DocumentElement, tNode);
-
-                // SECTION 4. Create a new TreeView Node with only the child nodes.
-                XmlNodeList nodelist = dom.SelectNodes("//child");
-                //XmlDocument cDom = new XmlDocument();
-                //cDom.LoadXml("<children></children>");
-                //foreach (XmlNode node in nodelist)
-                //{
-                //    XmlNode newElem = cDom.CreateNode(XmlNodeType.Element, node.Name, node.LocalName);
-                //    newElem.InnerText = node.InnerText;
-                //    cDom.DocumentElement.AppendChild(newElem);
-                //}
-                //
-                //ICFTree.Nodes.Add(new TreeNode(cDom.DocumentElement.Name));
-                //tNode = ICFTree.Nodes[1];
-                //AddNode(cDom.DocumentElement, tNode);
-                ICFTree.ExpandAll();
-                Objektliste = nodelist;
-                Objektzahl = Objektliste.Count;
-                Ausgabe.Text = Objektzahl.ToString();
-            }
-
-            catch (XmlException xmlEx)
-            {
-                MessageBox.Show(xmlEx.Message);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
         private void Ansichtwechsel_Click(object sender, EventArgs e)
         {
             if (ICFTabelle.Visible==false)
@@ -272,6 +224,25 @@ namespace Icfladen
                 ICFTabelle.Visible = false;
                 ICFTree.Visible = true;
             }
+        }
+
+        private void Save_Click(object sender, EventArgs e)
+        {
+
+            // Create the XmlDocument.
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml("<ClassificationObjects><name>wrench</name></ClassificationObjects>");
+
+            // Add a price element.
+            XmlElement newElem = doc.CreateElement("price");
+            newElem.InnerText = "10.95";
+            doc.DocumentElement.AppendChild(newElem);
+
+            // Save the document to a file. White space is
+            // preserved (no white space).
+            doc.PreserveWhitespace = true;
+            doc.Save("data.xml");
+
         }
     }
 }
