@@ -15,12 +15,14 @@ namespace Icfladen
     {
         public Form1()
         {
-            InitializeComponent();
+            InitializeComponent();            
+            MakeTable();
+            ICFtoTable(XMLDatei);
+            ICFTabelle.DataSource = Tabelle;
+            Populate();
         }
 
-        string XMLDatei = "\\ICF.xml";
-        int Objektzahl;
-        XmlNodeList Objektliste;
+        string XMLDatei = "\\ICF.xml";        
         string[,] Liste = new string[1602, 4];
         string[] Einträge = { "//d2p1:ClassificationObject",
                               ".//d2p1:DescriptionTexts/d4p1:DescriptionText/d4p1:DescriptionText/d4p1:Text",
@@ -75,21 +77,7 @@ namespace Icfladen
             Tabelle.PrimaryKey = PrimaryKeyColumns;
 
         }
-
-
-
-        private void InitializeTreeView()
-        {
-            ICFTree.BeginUpdate();
-            ICFTree.Nodes.Add("Parent");
-            ICFTree.Nodes[0].Nodes.Add("Child 1");
-            ICFTree.Nodes[0].Nodes.Add("Child 2");
-            ICFTree.Nodes[0].Nodes[1].Nodes.Add("Grandchild");
-            ICFTree.Nodes[0].Nodes[1].Nodes[0].Nodes.Add("Great Grandchild");
-            ICFTree.EndUpdate();
-        }
-
-
+                        
         private void ICFtoTable(string Datei)//liest die XML Datei aus und füllt die Tabelle mit den Kategorien.
         {
             DataRow row;
@@ -170,8 +158,7 @@ namespace Icfladen
 
 
         }
-
-        
+                
         private void AddNode(XmlNode inXmlNode, TreeNode inTreeNode)//Hinzufügen der Nodes 
         {
             XmlNode xNode;
@@ -199,17 +186,10 @@ namespace Icfladen
                 inTreeNode.Text = (inXmlNode.OuterXml).Trim();
             }
         }
-
-
-
+        
         private void LadeButton_Click(object sender, EventArgs e)
         {
-            //InitializeTreeView();
-            MakeTable();
-            ICFtoTable(XMLDatei);
-            ICFTabelle.DataSource = Tabelle;
-            Populate();
-            
+                        
         }
 
         private void Ansichtwechsel_Click(object sender, EventArgs e)
@@ -231,13 +211,20 @@ namespace Icfladen
 
             // Create the XmlDocument.
             XmlDocument doc = new XmlDocument();
-            doc.LoadXml("<ClassificationObjects><name>wrench</name></ClassificationObjects>");
-
+            doc.LoadXml("<ClassificationObjects></ClassificationObjects>");
+            string[,] Objekteinträge = { { "Beschreibung", "Beschreibung" },{ "id","ID" },{ "Code","ICF-Code"},{ "Zusatz","Zusatz"},{"Pfad","Hierachienummer" } };
             // Add a price element.
-            XmlElement newElem = doc.CreateElement("price");
-            newElem.InnerText = "10.95";
-            doc.DocumentElement.AppendChild(newElem);
-
+            foreach (DataRow row in Tabelle.Rows)  
+            {
+                XmlElement Kat = doc.CreateElement("ClassificationObject");
+                doc.DocumentElement.AppendChild(Kat);
+                for (int i = 0; i < 5; i++)
+                {
+                    XmlElement newElem = doc.CreateElement(Objekteinträge[i,1]);
+                    newElem.InnerText = row[Objekteinträge[i,0]].ToString();
+                    Kat.AppendChild(newElem);                    
+                }
+            }
             // Save the document to a file. White space is
             // preserved (no white space).
             doc.PreserveWhitespace = true;
