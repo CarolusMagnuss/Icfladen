@@ -22,54 +22,82 @@ namespace Icfladen
             Populate();
         }
 
-        string XMLDatei = "\\ICF.xml";        
+        //string XMLDatei = "\\ICF.xml";
+        string XMLDatei = "\\data.xml";
         string[,] Liste = new string[1602, 4];
-        string[] Einträge = { "//d2p1:ClassificationObject",
+        string[] EinträgeOriginal = { "//d2p1:ClassificationObject",
                               ".//d2p1:DescriptionTexts/d4p1:DescriptionText/d4p1:DescriptionText/d4p1:Text",
                               ".//d2p1:DisplayTexts/d4p1:DisplayText/d4p1:DisplayText/d4p1:Text",
                               ".//d2p1:GsOid",
                               ".//d2p1:ShortNames/d4p1:ShortName/d4p1:ShortName/d4p1:Text"};
+        string[] EinträgeNeu = {"//ClassificationObject",
+                                ".//Beschreibung",
+                                ".//ID",
+                                ".//ICF-Code",
+                                ".//Titel",
+                                ".//Hierachienummer",
+                                ".//Frage" };
+        int LetzedierteZeile;
 
         DataTable Tabelle = new DataTable("Klassifikationsobjekte");
 
         private void MakeTable() // Tabelle für die ICF Klassifikationsobjekte erschaffen.
         {
             DataColumn column;
-            
 
-            column = new DataColumn();
-            column.DataType = System.Type.GetType("System.Int32");
-            column.ColumnName = "id";
-            column.ReadOnly = true;
-            column.Unique = true;
+
+            column = new DataColumn
+            {
+                DataType = Type.GetType("System.Int32"),
+                ColumnName = "id",
+                ReadOnly = true,
+                Unique = true
+            };
             Tabelle.Columns.Add(column);
 
-            column = new DataColumn();
-            column.DataType = System.Type.GetType("System.String");
-            column.ColumnName = "Beschreibung";
-            column.ReadOnly = false;
-            column.Unique = false;
+            column = new DataColumn
+            {
+                DataType = Type.GetType("System.String"),
+                ColumnName = "Beschreibung",
+                ReadOnly = false,
+                Unique = false
+            };
             Tabelle.Columns.Add(column);
 
-            column = new DataColumn();
-            column.DataType = System.Type.GetType("System.String");
-            column.ColumnName = "Code";
-            column.ReadOnly = false;
-            column.Unique = false;
+            column = new DataColumn
+            {
+                DataType = Type.GetType("System.String"),
+                ColumnName = "Code",
+                ReadOnly = false,
+                Unique = false
+            };
             Tabelle.Columns.Add(column);
 
-            column = new DataColumn();
-            column.DataType = System.Type.GetType("System.String");
-            column.ColumnName = "Pfad";
-            column.ReadOnly = false;
-            column.Unique = false;
+            column = new DataColumn
+            {
+                DataType = Type.GetType("System.String"),
+                ColumnName = "Pfad",
+                ReadOnly = false,
+                Unique = false
+            };
             Tabelle.Columns.Add(column);
 
-            column = new DataColumn();
-            column.DataType = System.Type.GetType("System.String");
-            column.ColumnName = "Zusatz";
-            column.ReadOnly = false;
-            column.Unique = false;
+            column = new DataColumn
+            {
+                DataType = Type.GetType("System.String"),
+                ColumnName = "Titel",
+                ReadOnly = false,
+                Unique = false
+            };
+            Tabelle.Columns.Add(column);
+
+            column = new DataColumn
+            {
+                DataType = Type.GetType("System.String"),
+                ColumnName = "Frageformulierung",
+                ReadOnly = false,
+                Unique = false
+            };
             Tabelle.Columns.Add(column);
 
             DataColumn[] PrimaryKeyColumns = new DataColumn[1];
@@ -77,32 +105,54 @@ namespace Icfladen
             Tabelle.PrimaryKey = PrimaryKeyColumns;
 
         }
-                        
+
         private void ICFtoTable(string Datei)//liest die XML Datei aus und füllt die Tabelle mit den Kategorien.
         {
             DataRow row;
             XmlNode Aktiver;
             XmlDocument dom = new XmlDocument();
             dom.Load(Application.StartupPath + Datei);
-            
 
-            XmlNamespaceManager nsmgr = new XmlNamespaceManager(((XmlDocument)dom).NameTable);
-            nsmgr.AddNamespace("d2p1", "http://schemas.datacontract.org/2004/07/Geronto.Framework.Data.Classification.Model.V1");
-            nsmgr.AddNamespace("d4p1", "http://schemas.datacontract.org/2004/07/Geronto.Framework.Data.Foundation.Model.V1");
-            XmlNode root = dom.DocumentElement;
-            Aktiver = root.SelectSingleNode(Einträge[0], nsmgr);
-
-            for (int k = 0; k < 1602; k++)
+            if (Datei == "\\ICF.xml")
             {
-                                
-                row = Tabelle.NewRow();
-                row["id"] = k;
-                row["Beschreibung"] = Aktiver.SelectSingleNode(Einträge[1], nsmgr).InnerText;
-                row["Code"] = Aktiver.SelectSingleNode(Einträge[2], nsmgr).InnerText;
-                row["Pfad"] = Aktiver.SelectSingleNode(Einträge[3], nsmgr).InnerText;
-                row["Zusatz"] = Aktiver.SelectSingleNode(Einträge[4], nsmgr).InnerText;
-                Tabelle.Rows.Add(row);
-                Aktiver = Aktiver.NextSibling;
+                XmlNamespaceManager nsmgr = new XmlNamespaceManager(((XmlDocument)dom).NameTable);
+                nsmgr.AddNamespace("d2p1", "http://schemas.datacontract.org/2004/07/Geronto.Framework.Data.Classification.Model.V1");
+                nsmgr.AddNamespace("d4p1", "http://schemas.datacontract.org/2004/07/Geronto.Framework.Data.Foundation.Model.V1");
+                XmlNode root = dom.DocumentElement;
+                Aktiver = root.SelectSingleNode(EinträgeOriginal[0], nsmgr);
+
+                for (int k = 0; k < 1602; k++)
+                {
+
+                    row = Tabelle.NewRow();
+                    row["id"] = k;
+                    row["Beschreibung"] = Aktiver.SelectSingleNode(EinträgeOriginal[1], nsmgr).InnerText;
+                    row["Code"] = Aktiver.SelectSingleNode(EinträgeOriginal[2], nsmgr).InnerText;
+                    row["Pfad"] = Aktiver.SelectSingleNode(EinträgeOriginal[3], nsmgr).InnerText;
+                    row["Titel"] = Aktiver.SelectSingleNode(EinträgeOriginal[4], nsmgr).InnerText;
+                    Tabelle.Rows.Add(row);
+                    Aktiver = Aktiver.NextSibling;
+                }
+            }
+            else
+            {
+                XmlNode root = dom.DocumentElement;                
+                Ausgabe.Text = root.SelectSingleNode("//Speicher").InnerText;
+                Aktiver = root.SelectSingleNode(EinträgeNeu[0]);
+
+                for (int k = 0; k < 1602; k++)
+                {
+
+                    row = Tabelle.NewRow();
+                    row["id"] = Aktiver.SelectSingleNode(EinträgeNeu[2]).InnerText;
+                    row["Beschreibung"] = Aktiver.SelectSingleNode(EinträgeNeu[1]).InnerText;
+                    row["Code"] = Aktiver.SelectSingleNode(EinträgeNeu[3]).InnerText;
+                    row["Pfad"] = Aktiver.SelectSingleNode(EinträgeNeu[5]).InnerText;
+                    row["Titel"] = Aktiver.SelectSingleNode(EinträgeNeu[4]).InnerText;
+                    row["Frageformulierung"] = Aktiver.SelectSingleNode(EinträgeNeu[6]).InnerText;
+                    Tabelle.Rows.Add(row);
+                    Aktiver = Aktiver.NextSibling;
+                }
             }
         }
         
@@ -126,7 +176,7 @@ namespace Icfladen
                 Pfadnummern[t] = (int)char.GetNumericValue(GSOID[(((t + 1) * 2) + 4)]);                    
                 }
 
-            Ausgabe.Text = GSOID + Pfadnummern[1].ToString() + Pfadnummern[2].ToString() + Pfadnummern[3].ToString()+ Pfadnummern[4].ToString() + Pfadnummern[5].ToString()+" "+ GSOID;
+            //Ausgabe.Text = GSOID + Pfadnummern[1].ToString() + Pfadnummern[2].ToString() + Pfadnummern[3].ToString()+ Pfadnummern[4].ToString() + Pfadnummern[5].ToString()+" "+ GSOID;
 
             switch (Ebene)
             {
@@ -158,35 +208,7 @@ namespace Icfladen
 
 
         }
-                
-        private void AddNode(XmlNode inXmlNode, TreeNode inTreeNode)//Hinzufügen der Nodes 
-        {
-            XmlNode xNode;
-            TreeNode tNode;
-            XmlNodeList nodeList;
-            int i;
-
-            // Loop through the XML nodes until the leaf is reached.
-            // Add the nodes to the TreeView during the looping process.
-            if (inXmlNode.HasChildNodes)
-            {
-                nodeList = inXmlNode.ChildNodes;
-                for (i = 0; i <= nodeList.Count - 1; i++)
-                {
-                    xNode = inXmlNode.ChildNodes[i];
-                    inTreeNode.Nodes.Add(new TreeNode(xNode.Name));
-                    tNode = inTreeNode.Nodes[i];
-                    AddNode(xNode, tNode);
-                }
-            }
-            else
-            {
-                // Here you need to pull the data from the XmlNode based on the
-                // type of node, whether attribute values are required, and so forth.
-                inTreeNode.Text = (inXmlNode.OuterXml).Trim();
-            }
-        }
-        
+         
         private void LadeButton_Click(object sender, EventArgs e)
         {
                         
@@ -208,27 +230,34 @@ namespace Icfladen
 
         private void Save_Click(object sender, EventArgs e)
         {
-
-            // Create the XmlDocument.
             XmlDocument doc = new XmlDocument();
             doc.LoadXml("<ClassificationObjects></ClassificationObjects>");
-            string[,] Objekteinträge = { { "Beschreibung", "Beschreibung" },{ "id","ID" },{ "Code","ICF-Code"},{ "Zusatz","Zusatz"},{"Pfad","Hierachienummer" } };
-            // Add a price element.
+            XmlElement Speicher = doc.CreateElement("Speicher");
+            Speicher.InnerText = LetzedierteZeile.ToString();
+            doc.DocumentElement.AppendChild(Speicher);
+            string[,] Objekteinträge = { { "Beschreibung", "Beschreibung" },{ "id","ID" },{ "Code","ICF-Code"},{ "Titel","Titel"},{"Pfad","Hierachienummer" },{"Frageformulierung","Frage" } };
+            
             foreach (DataRow row in Tabelle.Rows)  
             {
                 XmlElement Kat = doc.CreateElement("ClassificationObject");
                 doc.DocumentElement.AppendChild(Kat);
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 6; i++)
                 {
                     XmlElement newElem = doc.CreateElement(Objekteinträge[i,1]);
                     newElem.InnerText = row[Objekteinträge[i,0]].ToString();
                     Kat.AppendChild(newElem);                    
                 }
-            }
-            // Save the document to a file. White space is
-            // preserved (no white space).
+            }            
             doc.PreserveWhitespace = true;
             doc.Save("data.xml");
+
+        }
+
+        private void ICFTabelle_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            Point Adresse = ICFTabelle.CurrentCellAddress;
+            LetzedierteZeile = Adresse.Y;
+            Ausgabe.Text = LetzedierteZeile.ToString();
 
         }
     }
