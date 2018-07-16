@@ -35,6 +35,7 @@
             this.Ansichtwechsel = new System.Windows.Forms.Button();
             this.Change = new System.Windows.Forms.Button();
             this.Save = new System.Windows.Forms.Button();
+            this.EdierBox = new System.Windows.Forms.RichTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.ICFTabelle)).BeginInit();
             this.SuspendLayout();
             // 
@@ -42,8 +43,9 @@
             // 
             this.ICFTree.Location = new System.Drawing.Point(28, 20);
             this.ICFTree.Name = "ICFTree";
-            this.ICFTree.Size = new System.Drawing.Size(953, 581);
+            this.ICFTree.Size = new System.Drawing.Size(953, 340);
             this.ICFTree.TabIndex = 0;
+            this.ICFTree.Visible = false;
             // 
             // LadeButton
             // 
@@ -69,10 +71,10 @@
             this.ICFTabelle.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.ICFTabelle.Location = new System.Drawing.Point(20, 20);
             this.ICFTabelle.Name = "ICFTabelle";
-            this.ICFTabelle.Size = new System.Drawing.Size(1160, 580);
+            this.ICFTabelle.Size = new System.Drawing.Size(1160, 340);
             this.ICFTabelle.TabIndex = 4;
-            this.ICFTabelle.Visible = false;
             this.ICFTabelle.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.ICFTabelle_CellValueChanged);
+            this.ICFTabelle.CurrentCellChanged += new System.EventHandler(this.ICFTabelle_CurrentCellChanged);
             // 
             // Ansichtwechsel
             // 
@@ -92,6 +94,7 @@
             this.Change.TabIndex = 7;
             this.Change.Text = "Änderungen Übernehmen";
             this.Change.UseVisualStyleBackColor = true;
+            this.Change.Click += new System.EventHandler(this.Change_Click);
             // 
             // Save
             // 
@@ -103,12 +106,22 @@
             this.Save.UseVisualStyleBackColor = true;
             this.Save.Click += new System.EventHandler(this.Save_Click);
             // 
+            // EdierBox
+            // 
+            this.EdierBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.EdierBox.Location = new System.Drawing.Point(20, 395);
+            this.EdierBox.Name = "EdierBox";
+            this.EdierBox.Size = new System.Drawing.Size(1160, 189);
+            this.EdierBox.TabIndex = 9;
+            this.EdierBox.Text = "";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.ClientSize = new System.Drawing.Size(1304, 613);
+            this.Controls.Add(this.EdierBox);
             this.Controls.Add(this.Save);
             this.Controls.Add(this.Change);
             this.Controls.Add(this.Ansichtwechsel);
@@ -133,6 +146,7 @@
         private System.Windows.Forms.Button Ansichtwechsel;
         private System.Windows.Forms.Button Change;
         private System.Windows.Forms.Button Save;
+        private System.Windows.Forms.RichTextBox EdierBox;
     }
 }
 

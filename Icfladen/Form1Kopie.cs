@@ -218,7 +218,7 @@ namespace Icfladen
             ICFTabelle.Columns[3].Width = 140;
             ICFTabelle.Columns[4].Width = 350;
             ICFTabelle.Columns[5].Width = 250; 
-        }
+        }// Legt die Spaltenbreite im GridView fest
          
         private void LadeButton_Click(object sender, EventArgs e)
         {
@@ -237,7 +237,7 @@ namespace Icfladen
                 ICFTabelle.Visible = false;
                 ICFTree.Visible = true;
             }
-        }
+        }//Wechselt zwischen Treeviewansicht und GridViewAnsicht
 
         private void Save_Click(object sender, EventArgs e)
         {
@@ -262,7 +262,7 @@ namespace Icfladen
             doc.PreserveWhitespace = true;
             doc.Save("data.xml");
 
-        }
+        } //speichert die Bearbeitete Tabelle in die data.xml
 
         private void ICFTabelle_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
@@ -270,6 +270,20 @@ namespace Icfladen
             LetzedierteZeile = Adresse.Y;
             Ausgabe.Text = LetzedierteZeile.ToString();
 
+        }
+
+        private void ICFTabelle_CurrentCellChanged(object sender, EventArgs e)
+        {
+            if (ICFTabelle.CurrentCell != null)
+            {
+                EdierBox.Text = ICFTabelle.CurrentCell.Value.ToString();
+            }
+            
+        }
+
+        private void Change_Click(object sender, EventArgs e)
+        {
+            ICFTabelle.CurrentCell.Value = EdierBox.Text;
         }
     }
 }
