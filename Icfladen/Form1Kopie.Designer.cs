@@ -67,9 +67,9 @@
             // ICFTabelle
             // 
             this.ICFTabelle.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.ICFTabelle.Location = new System.Drawing.Point(28, 20);
+            this.ICFTabelle.Location = new System.Drawing.Point(20, 20);
             this.ICFTabelle.Name = "ICFTabelle";
-            this.ICFTabelle.Size = new System.Drawing.Size(1152, 581);
+            this.ICFTabelle.Size = new System.Drawing.Size(1160, 580);
             this.ICFTabelle.TabIndex = 4;
             this.ICFTabelle.Visible = false;
             this.ICFTabelle.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.ICFTabelle_CellValueChanged);

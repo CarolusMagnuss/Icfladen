@@ -19,6 +19,7 @@ namespace Icfladen
             MakeTable();
             ICFtoTable(XMLDatei);
             ICFTabelle.DataSource = Tabelle;
+            Spaltenbreite();
             Populate();
         }
 
@@ -207,6 +208,16 @@ namespace Icfladen
 
 
 
+        }
+
+        private void Spaltenbreite()
+        {
+            ICFTabelle.Columns[0].Width = 40;
+            ICFTabelle.Columns[1].Width = 350;
+            ICFTabelle.Columns[2].Width = 60;
+            ICFTabelle.Columns[3].Width = 140;
+            ICFTabelle.Columns[4].Width = 350;
+            ICFTabelle.Columns[5].Width = 250; 
         }
          
         private void LadeButton_Click(object sender, EventArgs e)
