@@ -19,18 +19,20 @@ namespace Icfladen
             MakeTable();
             ICFtoTable(XMLDatei);
             ICFTabelle.DataSource = Tabelle;
-            Spaltenbreite();
+            TabellenUI();
             Populate();
         }
 
-        //string XMLDatei = "\\ICF.xml";
-        string XMLDatei = "\\data.xml";
+        string XMLDatei = "\\ICF.xml";
+        //string XMLDatei = "\\data.xml";
         string[,] Liste = new string[1602, 4];
         string[] EinträgeOriginal = { "//d2p1:ClassificationObject",
                               ".//d2p1:DescriptionTexts/d4p1:DescriptionText/d4p1:DescriptionText/d4p1:Text",
                               ".//d2p1:DisplayTexts/d4p1:DisplayText/d4p1:DisplayText/d4p1:Text",
                               ".//d2p1:GsOid",
-                              ".//d2p1:ShortNames/d4p1:ShortName/d4p1:ShortName/d4p1:Text"};
+                              ".//d2p1:ShortNames/d4p1:ShortName/d4p1:ShortName/d4p1:Text",
+                              ".//d2p1:Options/d4p1:Option/d4p1:Option/d4p1:Value",
+                              ".//d2p1:Options/d4p1:Option"};
         string[] EinträgeNeu = {"//ClassificationObject",
                                 ".//Beschreibung",
                                 ".//ID",
@@ -95,6 +97,24 @@ namespace Icfladen
             column = new DataColumn
             {
                 DataType = Type.GetType("System.String"),
+                ColumnName = "Inklusion",
+                ReadOnly = false,
+                Unique = false
+            };
+            Tabelle.Columns.Add(column);
+
+            column = new DataColumn
+            {
+                DataType = Type.GetType("System.String"),
+                ColumnName = "Exklusion",
+                ReadOnly = false,
+                Unique = false
+            };
+            Tabelle.Columns.Add(column);
+
+            column = new DataColumn
+            {
+                DataType = Type.GetType("System.String"),
                 ColumnName = "Frageformulierung",
                 ReadOnly = false,
                 Unique = false
@@ -131,6 +151,22 @@ namespace Icfladen
                     row["Code"] = Aktiver.SelectSingleNode(EinträgeOriginal[2], nsmgr).InnerText;
                     row["Pfad"] = Aktiver.SelectSingleNode(EinträgeOriginal[3], nsmgr).InnerText;
                     row["Titel"] = Aktiver.SelectSingleNode(EinträgeOriginal[4], nsmgr).InnerText;
+                    if (Aktiver.SelectSingleNode(EinträgeOriginal[6],nsmgr).HasChildNodes==true)
+                    {
+                        XmlNodeList Addendum = Aktiver.SelectSingleNode(EinträgeOriginal[6], nsmgr).ChildNodes;
+                        foreach (XmlNode node in Addendum)
+                        {   
+                            string caption = node.LastChild.InnerText;
+                            if (caption[0]=='I')
+                            {
+                                 row["Inklusion"] = caption;
+                            }
+                            else
+                            {
+                                 row["Exklusion"] = caption;
+                            }
+                        }
+                    }
                     Tabelle.Rows.Add(row);
                     Aktiver = Aktiver.NextSibling;
                 }
@@ -210,16 +246,16 @@ namespace Icfladen
 
         }
 
-        private void Spaltenbreite()
+        private void TabellenUI()
         {
             ICFTabelle.Columns[0].Width = 40;
             ICFTabelle.Columns[1].Width = 350;
             ICFTabelle.Columns[2].Width = 60;
             ICFTabelle.Columns[3].Width = 140;
             ICFTabelle.Columns[4].Width = 350;
-            ICFTabelle.Columns[5].Width = 250; 
-        }// Legt die Spaltenbreite im GridView fest
-         
+            ICFTabelle.Columns[5].Width = 250;
+        }
+
         private void LadeButton_Click(object sender, EventArgs e)
         {
                         
