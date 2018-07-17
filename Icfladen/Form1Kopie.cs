@@ -23,8 +23,8 @@ namespace Icfladen
             Populate();
         }
 
-        string XMLDatei = "\\ICF.xml";
-        //string XMLDatei = "\\data.xml";
+        //string XMLDatei = "\\ICF.xml";
+        string XMLDatei = "\\data.xml";
         string[,] Liste = new string[1602, 4];
         string[] EinträgeOriginal = { "//d2p1:ClassificationObject",
                               ".//d2p1:DescriptionTexts/d4p1:DescriptionText/d4p1:DescriptionText/d4p1:Text",
@@ -39,7 +39,9 @@ namespace Icfladen
                                 ".//ICF-Code",
                                 ".//Titel",
                                 ".//Hierachienummer",
-                                ".//Frage" };
+                                ".//Frage",
+                                ".//Inklusion",
+                                ".//Exklusion"};
         int LetzedierteZeile;
 
         DataTable Tabelle = new DataTable("Klassifikationsobjekte");
@@ -56,6 +58,15 @@ namespace Icfladen
                 ReadOnly = true,
                 Unique = true
             };
+            Tabelle.Columns.Add(column);
+            column = new DataColumn
+            {
+                DataType = Type.GetType("System.String"),
+                ColumnName = "Titel",
+                ReadOnly = false,
+                Unique = false
+            };
+
             Tabelle.Columns.Add(column);
 
             column = new DataColumn
@@ -83,16 +94,7 @@ namespace Icfladen
                 ReadOnly = false,
                 Unique = false
             };
-            Tabelle.Columns.Add(column);
-
-            column = new DataColumn
-            {
-                DataType = Type.GetType("System.String"),
-                ColumnName = "Titel",
-                ReadOnly = false,
-                Unique = false
-            };
-            Tabelle.Columns.Add(column);
+            Tabelle.Columns.Add(column);    
 
             column = new DataColumn
             {
@@ -187,6 +189,8 @@ namespace Icfladen
                     row["Pfad"] = Aktiver.SelectSingleNode(EinträgeNeu[5]).InnerText;
                     row["Titel"] = Aktiver.SelectSingleNode(EinträgeNeu[4]).InnerText;
                     row["Frageformulierung"] = Aktiver.SelectSingleNode(EinträgeNeu[6]).InnerText;
+                    row["Inklusion"] = Aktiver.SelectSingleNode(EinträgeNeu[7]).InnerText;
+                    row["Exklusion"] = Aktiver.SelectSingleNode(EinträgeNeu[8]).InnerText;
                     Tabelle.Rows.Add(row);
                     Aktiver = Aktiver.NextSibling;
                 }
@@ -250,11 +254,11 @@ namespace Icfladen
         {
             ICFTabelle.Columns[0].Width = 40;
             ICFTabelle.Columns[1].Width = 350;
-            ICFTabelle.Columns[2].Width = 60;
-            ICFTabelle.Columns[3].Width = 140;
-            ICFTabelle.Columns[4].Width = 350;
-            ICFTabelle.Columns[5].Width = 250;
-        }
+            ICFTabelle.Columns[2].Width = 350;
+            ICFTabelle.Columns[3].Width = 80;
+            ICFTabelle.Columns[4].Width = 100;
+            ICFTabelle.Columns[5].Width = 100;
+        }//Spaltenbreiten der Tabelle
 
         private void LadeButton_Click(object sender, EventArgs e)
         {
@@ -282,13 +286,20 @@ namespace Icfladen
             XmlElement Speicher = doc.CreateElement("Speicher");
             Speicher.InnerText = LetzedierteZeile.ToString();
             doc.DocumentElement.AppendChild(Speicher);
-            string[,] Objekteinträge = { { "Beschreibung", "Beschreibung" },{ "id","ID" },{ "Code","ICF-Code"},{ "Titel","Titel"},{"Pfad","Hierachienummer" },{"Frageformulierung","Frage" } };
+            string[,] Objekteinträge = { { "Beschreibung", "Beschreibung" },
+                                         { "id","ID" },
+                                         { "Code","ICF-Code"},
+                                         { "Titel","Titel"},
+                                         {"Pfad","Hierachienummer" },
+                                         {"Frageformulierung","Frage" },
+                                         {"Inklusion" , "Inklusion"},
+                                         { "Exklusion" , "Exklusion" } };
             
             foreach (DataRow row in Tabelle.Rows)  
             {
                 XmlElement Kat = doc.CreateElement("ClassificationObject");
                 doc.DocumentElement.AppendChild(Kat);
-                for (int i = 0; i < 6; i++)
+                for (int i = 0; i < 8; i++)
                 {
                     XmlElement newElem = doc.CreateElement(Objekteinträge[i,1]);
                     newElem.InnerText = row[Objekteinträge[i,0]].ToString();
