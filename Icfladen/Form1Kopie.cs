@@ -23,8 +23,9 @@ namespace Icfladen
             Populate();
         }
 
+        string XMLDatei = "\\ICFneu.xml";
         //string XMLDatei = "\\ICF.xml";
-        string XMLDatei = "\\data.xml";
+        //string XMLDatei = "\\data.xml";
         string[,] Liste = new string[1602, 4];
         string[] EinträgeOriginal = { "//d2p1:ClassificationObject",
                               ".//d2p1:DescriptionTexts/d4p1:DescriptionText/d4p1:DescriptionText/d4p1:Text",
@@ -136,7 +137,7 @@ namespace Icfladen
             XmlDocument dom = new XmlDocument();
             dom.Load(Application.StartupPath + Datei);
 
-            if (Datei == "\\ICF.xml")
+            if (Datei == "\\ICFneu.xml")
             {
                 XmlNamespaceManager nsmgr = new XmlNamespaceManager(((XmlDocument)dom).NameTable);
                 nsmgr.AddNamespace("d2p1", "http://schemas.datacontract.org/2004/07/Geronto.Framework.Data.Classification.Model.V1");
@@ -273,7 +274,7 @@ namespace Icfladen
             {
                 row = Zeilen[k];
                 Aktiver.SelectSingleNode(EinträgeOriginal[1], nsmgr).InnerText = (string)row["Beschreibung"];
-                Aktiver.SelectSingleNode(EinträgeOriginal[1], nsmgr).InnerText = (string)row["Code"];
+                Aktiver.SelectSingleNode(EinträgeOriginal[2], nsmgr).InnerText = (string)row["Code"];
                 Aktiver.SelectSingleNode(EinträgeOriginal[3], nsmgr).InnerText = (string)row["Pfad"];
                 Aktiver.SelectSingleNode(EinträgeOriginal[4], nsmgr).InnerText = (string)row["Titel"];
 
@@ -304,9 +305,6 @@ namespace Icfladen
             dom.PreserveWhitespace = true;
             dom.Save("ICFneu.xml");
         }
-
-        
-    
 
         private void Ansichtwechsel_Click(object sender, EventArgs e)
         {
