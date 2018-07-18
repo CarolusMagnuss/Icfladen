@@ -15,7 +15,7 @@ namespace Icfladen
     {
         public Form1()
         {
-            InitializeComponent();            
+            InitializeComponent();
             MakeTable();
             ICFtoTable(XMLDatei);
             ICFTabelle.DataSource = Tabelle;
@@ -94,7 +94,7 @@ namespace Icfladen
                 ReadOnly = false,
                 Unique = false
             };
-            Tabelle.Columns.Add(column);    
+            Tabelle.Columns.Add(column);
 
             column = new DataColumn
             {
@@ -153,19 +153,19 @@ namespace Icfladen
                     row["Code"] = Aktiver.SelectSingleNode(EinträgeOriginal[2], nsmgr).InnerText;
                     row["Pfad"] = Aktiver.SelectSingleNode(EinträgeOriginal[3], nsmgr).InnerText;
                     row["Titel"] = Aktiver.SelectSingleNode(EinträgeOriginal[4], nsmgr).InnerText;
-                    if (Aktiver.SelectSingleNode(EinträgeOriginal[6],nsmgr).HasChildNodes==true)
+                    if (Aktiver.SelectSingleNode(EinträgeOriginal[6], nsmgr).HasChildNodes == true)
                     {
                         XmlNodeList Addendum = Aktiver.SelectSingleNode(EinträgeOriginal[6], nsmgr).ChildNodes;
                         foreach (XmlNode node in Addendum)
-                        {   
+                        {
                             string caption = node.LastChild.InnerText;
-                            if (caption[0]=='I')
+                            if (caption[0] == 'I')
                             {
-                                 row["Inklusion"] = caption;
+                                row["Inklusion"] = caption;
                             }
                             else
                             {
-                                 row["Exklusion"] = caption;
+                                row["Exklusion"] = caption;
                             }
                         }
                     }
@@ -175,7 +175,7 @@ namespace Icfladen
             }
             else
             {
-                XmlNode root = dom.DocumentElement;                
+                XmlNode root = dom.DocumentElement;
                 Ausgabe.Text = root.SelectSingleNode("//Speicher").InnerText;
                 Aktiver = root.SelectSingleNode(EinträgeNeu[0]);
 
@@ -196,7 +196,7 @@ namespace Icfladen
                 }
             }
         }
-        
+
         private void Populate() //Nutzt die Daten der Tabelle zur Erstellung der Knoten im ICF TreeView.
         {
             DataRow[] Zeilen = Tabelle.Select();
@@ -204,50 +204,43 @@ namespace Icfladen
 
             DataRow rowa = Zeilen[0];
             //Pfadnummern[0] = (int)char.GetNumericValue(GSOID[6]);
-            
 
-           
+
+
             foreach (DataRow row in Zeilen)
             {
-             string GSOID = (string)row["Pfad"];
-             int Ebene = (GSOID.Length - 5) / 2;
+                string GSOID = (string)row["Pfad"];
+                int Ebene = (GSOID.Length - 5) / 2;
 
-                for (int t = 0; t < (Ebene-1); t++)
+                for (int t = 0; t < (Ebene - 1); t++)
                 {
-                Pfadnummern[t] = (int)char.GetNumericValue(GSOID[(((t + 1) * 2) + 4)]);                    
+                    Pfadnummern[t] = (int)char.GetNumericValue(GSOID[(((t + 1) * 2) + 4)]);
                 }
 
-            //Ausgabe.Text = GSOID + Pfadnummern[1].ToString() + Pfadnummern[2].ToString() + Pfadnummern[3].ToString()+ Pfadnummern[4].ToString() + Pfadnummern[5].ToString()+" "+ GSOID;
+                //Ausgabe.Text = GSOID + Pfadnummern[1].ToString() + Pfadnummern[2].ToString() + Pfadnummern[3].ToString()+ Pfadnummern[4].ToString() + Pfadnummern[5].ToString()+" "+ GSOID;
 
-            switch (Ebene)
-            {
-                case 1:
-                    ICFTree.Nodes.Add((string)row["Code"]+(string)row["Beschreibung"]);
-                    break;
-                case 2:
-                    ICFTree.Nodes[(Pfadnummern[0]-1)].Nodes.Add((string)row["Code"] + (string)row["Beschreibung"]);
-                    break;
-                case 3:
-                    ICFTree.Nodes[(Pfadnummern[0]-1)].Nodes[(Pfadnummern[1]-1)].Nodes.Add((string)row["Code"] + (string)row["Beschreibung"]);
-                    break;
-                case 4:
-                    ICFTree.Nodes[(Pfadnummern[0]-1)].Nodes[(Pfadnummern[1]-1)].Nodes[(Pfadnummern[2]-1)].Nodes.Add((string)row["Code"] + (string)row["Beschreibung"]);
-                    break;
-                case 5:
-                    ICFTree.Nodes[(Pfadnummern[0]-1)].Nodes[(Pfadnummern[1]-1)].Nodes[(Pfadnummern[2])-1].Nodes[(Pfadnummern[3]-1)].Nodes.Add((string)row["Code"] + (string)row["Beschreibung"]);
-                    break;
-                case 6:
-                    ICFTree.Nodes[(Pfadnummern[0]-1)].Nodes[(Pfadnummern[1]-1)].Nodes[(Pfadnummern[2])-1].Nodes[(Pfadnummern[3])-1].Nodes[(Pfadnummern[4]-1)].Nodes.Add((string)row["Code"] + (string)row["Beschreibung"]);
-                    break;
+                switch (Ebene)
+                {
+                    case 1:
+                        ICFTree.Nodes.Add((string)row["Titel"]);
+                        break;
+                    case 2:
+                        ICFTree.Nodes[(Pfadnummern[0] - 1)].Nodes.Add((string)row["Titel"]);
+                        break;
+                    case 3:
+                        ICFTree.Nodes[(Pfadnummern[0] - 1)].Nodes[(Pfadnummern[1] - 1)].Nodes.Add((string)row["Code"] + " " + (string)row["Titel"]);
+                        break;
+                    case 4:
+                        ICFTree.Nodes[(Pfadnummern[0] - 1)].Nodes[(Pfadnummern[1] - 1)].Nodes[(Pfadnummern[2] - 1)].Nodes.Add((string)row["Code"] + " " + (string)row["Titel"]);
+                        break;
+                    case 5:
+                        ICFTree.Nodes[(Pfadnummern[0] - 1)].Nodes[(Pfadnummern[1] - 1)].Nodes[(Pfadnummern[2]) - 1].Nodes[(Pfadnummern[3] - 1)].Nodes.Add((string)row["Code"] + " " + (string)row["Titel"]);
+                        break;
+                    case 6:
+                        ICFTree.Nodes[(Pfadnummern[0] - 1)].Nodes[(Pfadnummern[1] - 1)].Nodes[(Pfadnummern[2]) - 1].Nodes[(Pfadnummern[3]) - 1].Nodes[(Pfadnummern[4] - 1)].Nodes.Add((string)row["Code"] + " " + (string)row["Titel"]);
+                        break;
+                }
             }
-
-
-
-
-            }
-
-
-
         }
 
         private void TabellenUI()
@@ -260,10 +253,60 @@ namespace Icfladen
             ICFTabelle.Columns[5].Width = 100;
         }//Spaltenbreiten der Tabelle
 
-        private void LadeButton_Click(object sender, EventArgs e)
+        private void LadeButton_Click(object sender, EventArgs e)// Datei in alter Formattierung speichern
         {
+            XmlDocument dom = new XmlDocument();
+            DataRowCollection Zeilen = Tabelle.Rows;
+            DataRow row;
+            XmlNode Aktiver;
+            dom.Load(Application.StartupPath + "//ICF.xml");
+
+            XmlNamespaceManager nsmgr = new XmlNamespaceManager(((XmlDocument)dom).NameTable);
+            nsmgr.AddNamespace("d2p1", "http://schemas.datacontract.org/2004/07/Geronto.Framework.Data.Classification.Model.V1");
+            nsmgr.AddNamespace("d4p1", "http://schemas.datacontract.org/2004/07/Geronto.Framework.Data.Foundation.Model.V1");
+
+            XmlNode root = dom.DocumentElement;
+            Aktiver = root.SelectSingleNode(EinträgeOriginal[0], nsmgr);
+
+
+            for (int k = 0; k < 1602; k++)
+            {
+                row = Zeilen[k];
+                Aktiver.SelectSingleNode(EinträgeOriginal[1], nsmgr).InnerText = (string)row["Beschreibung"];
+                Aktiver.SelectSingleNode(EinträgeOriginal[1], nsmgr).InnerText = (string)row["Code"];
+                Aktiver.SelectSingleNode(EinträgeOriginal[3], nsmgr).InnerText = (string)row["Pfad"];
+                Aktiver.SelectSingleNode(EinträgeOriginal[4], nsmgr).InnerText = (string)row["Titel"];
+
+                if (Aktiver.SelectSingleNode(EinträgeOriginal[6], nsmgr).HasChildNodes == true)
+                {
+                    XmlNodeList Addendum = Aktiver.SelectSingleNode(EinträgeOriginal[6], nsmgr).ChildNodes;
+                    int AnzahlZusatz = Addendum.Count;
+                    if (AnzahlZusatz==1)
+                    {
                         
+                        if ((string)row["Inklusion"] != "")
+                        {
+                            Addendum[0].LastChild.InnerText = (string)row["Inklusion"];
+                        }
+                        else
+                        {
+                            Addendum[0].LastChild.InnerText = (string)row["Exklusion"];
+                        }
+                    }
+                    else
+                    {
+                        Addendum[0].LastChild.InnerText = (string)row["Inklusion"];
+                        Addendum[1].LastChild.InnerText = (string)row["Exklusion"];
+                    }
+                }                
+                Aktiver = Aktiver.NextSibling;
+            }
+            dom.PreserveWhitespace = true;
+            dom.Save("ICFneu.xml");
         }
+
+        
+    
 
         private void Ansichtwechsel_Click(object sender, EventArgs e)
         {

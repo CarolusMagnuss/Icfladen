@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.ICFTree = new System.Windows.Forms.TreeView();
-            this.LadeButton = new System.Windows.Forms.Button();
+            this.SaveInOldFormat = new System.Windows.Forms.Button();
             this.Ausgabe = new System.Windows.Forms.Label();
             this.ICFTabelle = new System.Windows.Forms.DataGridView();
             this.Ansichtwechsel = new System.Windows.Forms.Button();
@@ -47,15 +47,15 @@
             this.ICFTree.TabIndex = 0;
             this.ICFTree.Visible = false;
             // 
-            // LadeButton
+            // SaveInOldFormat
             // 
-            this.LadeButton.Location = new System.Drawing.Point(252, 557);
-            this.LadeButton.Name = "LadeButton";
-            this.LadeButton.Size = new System.Drawing.Size(106, 44);
-            this.LadeButton.TabIndex = 1;
-            this.LadeButton.Text = "Lade Datei";
-            this.LadeButton.UseVisualStyleBackColor = true;
-            this.LadeButton.Click += new System.EventHandler(this.LadeButton_Click);
+            this.SaveInOldFormat.Location = new System.Drawing.Point(252, 557);
+            this.SaveInOldFormat.Name = "SaveInOldFormat";
+            this.SaveInOldFormat.Size = new System.Drawing.Size(106, 44);
+            this.SaveInOldFormat.TabIndex = 1;
+            this.SaveInOldFormat.Text = "Speichern in altem Format";
+            this.SaveInOldFormat.UseVisualStyleBackColor = true;
+            this.SaveInOldFormat.Click += new System.EventHandler(this.LadeButton_Click);
             // 
             // Ausgabe
             // 
@@ -127,7 +127,7 @@
             this.Controls.Add(this.Ansichtwechsel);
             this.Controls.Add(this.ICFTabelle);
             this.Controls.Add(this.Ausgabe);
-            this.Controls.Add(this.LadeButton);
+            this.Controls.Add(this.SaveInOldFormat);
             this.Controls.Add(this.ICFTree);
             this.Name = "Form1";
             this.Text = "Laden Bearbeiten und Speichern von XML Datei";
@@ -140,7 +140,7 @@
         #endregion
 
         private System.Windows.Forms.TreeView ICFTree;
-        private System.Windows.Forms.Button LadeButton;
+        private System.Windows.Forms.Button SaveInOldFormat;
         private System.Windows.Forms.Label Ausgabe;
         private System.Windows.Forms.DataGridView ICFTabelle;
         private System.Windows.Forms.Button Ansichtwechsel;
