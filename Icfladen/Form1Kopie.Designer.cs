@@ -36,6 +36,7 @@
             this.Change = new System.Windows.Forms.Button();
             this.Save = new System.Windows.Forms.Button();
             this.EdierBox = new System.Windows.Forms.RichTextBox();
+            this.FillTree = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.ICFTabelle)).BeginInit();
             this.SuspendLayout();
             // 
@@ -115,12 +116,23 @@
             this.EdierBox.TabIndex = 9;
             this.EdierBox.Text = "";
             // 
+            // FillTree
+            // 
+            this.FillTree.Location = new System.Drawing.Point(866, 557);
+            this.FillTree.Name = "FillTree";
+            this.FillTree.Size = new System.Drawing.Size(115, 45);
+            this.FillTree.TabIndex = 10;
+            this.FillTree.Text = "Strukturelle Fehler korrigieren";
+            this.FillTree.UseVisualStyleBackColor = true;
+            this.FillTree.Click += new System.EventHandler(this.FillTree_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.ClientSize = new System.Drawing.Size(1188, 611);
+            this.Controls.Add(this.FillTree);
             this.Controls.Add(this.EdierBox);
             this.Controls.Add(this.Save);
             this.Controls.Add(this.Change);
@@ -147,6 +159,7 @@
         private System.Windows.Forms.Button Change;
         private System.Windows.Forms.Button Save;
         private System.Windows.Forms.RichTextBox EdierBox;
+        private System.Windows.Forms.Button FillTree;
     }
 }
 
