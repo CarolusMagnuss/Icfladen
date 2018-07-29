@@ -24,7 +24,7 @@ namespace Icfladen
             DataRowCollection Zeilen = Tabelle.Rows;
             DataRow row;
             XmlNode Aktiver;
-            dom.Load(Application.StartupPath + "//ICF.xml");
+            dom.Load(Application.StartupPath + "//ICFneu.xml");
 
             XmlNamespaceManager nsmgr = new XmlNamespaceManager(((XmlDocument)dom).NameTable);
             nsmgr.AddNamespace("d2p1", "http://schemas.datacontract.org/2004/07/Geronto.Framework.Data.Classification.Model.V1");
@@ -49,7 +49,7 @@ namespace Icfladen
                     if (AnzahlZusatz == 1)
                     {
 
-                        if ((string)row["Inklusion"] != "")
+                        if ((string)row["Inklusion"] != ""&& (string)row["Inklusion"]!=null)
                         {
                             Addendum[0].LastChild.InnerText = (string)row["Inklusion"];
                         }
@@ -68,7 +68,6 @@ namespace Icfladen
             }
             dom.PreserveWhitespace = true;
             dom.Save("ICFneu.xml");
-
         }
 
         // Speichert die Tabelle in einfacher Formatierung in neue Datei

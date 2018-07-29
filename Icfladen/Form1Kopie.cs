@@ -24,9 +24,9 @@ namespace Icfladen
             Populate();
         }
 
-        string XMLDatei = "\\ICFneu.xml";
+        //string XMLDatei = "\\ICFneu.xml";
         //string XMLDatei = "\\ICF.xml";
-        //string XMLDatei = "\\data.xml";
+        string XMLDatei = "\\data.xml";
         //string XMLDatei = "\\Struktur.xml";
         string[,] Liste = new string[1602, 4];
         string[] EinträgeOriginal = { "//d2p1:ClassificationObject",
@@ -328,7 +328,7 @@ namespace Icfladen
 
             private void LadeButton_Click(object sender, EventArgs e)// Datei in alter Formattierung speichern
             {
-                SpeichernNeuInUrsprung();
+                SpeichernAlt();
             }
 
             private void Ansichtwechsel_Click(object sender, EventArgs e)
