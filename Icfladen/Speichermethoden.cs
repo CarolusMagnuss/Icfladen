@@ -47,12 +47,13 @@ namespace Icfladen
                     XmlNodeList Addendum = Aktiver.SelectSingleNode(EinträgeOriginal[6], nsmgr).ChildNodes;
                     int AnzahlZusatz = Addendum.Count;
                     if (AnzahlZusatz == 1)
-                    {
-                        if (!DBNull.Value.Equals(row["Inklusion"]))
+                    {   
+
+                        if ((row.IsNull("Inklusion") == true))
                         {
                             row["Inklusion"]= "";
                         }
-                        if (!DBNull.Value.Equals(row["Exklusion"]))
+                        if ((row.IsNull("Exklusion") == true))
                         {
                             row["Exklusion"] = "";
                         }
