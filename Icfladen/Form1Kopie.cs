@@ -24,9 +24,9 @@ namespace Icfladen
             Populate();
         }
 
-        //string XMLDatei = "\\ICFneu.xml";
+        string XMLDatei = "\\ICFneu.xml";
         //string XMLDatei = "\\ICF.xml";
-        string XMLDatei = "\\data.xml";
+        // XMLDatei = "\\data.xml";
         //string XMLDatei = "\\Struktur.xml";
         string[,] Liste = new string[1602, 4];
         string[] EinträgeOriginal = { "//d2p1:ClassificationObject",

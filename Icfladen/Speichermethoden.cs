@@ -48,6 +48,15 @@ namespace Icfladen
                     int AnzahlZusatz = Addendum.Count;
                     if (AnzahlZusatz == 1)
                     {
+                        if (!DBNull.Value.Equals(row["Inklusion"]))
+                        {
+                            row["Inklusion"]= "";
+                        }
+                        if (!DBNull.Value.Equals(row["Exklusion"]))
+                        {
+                            row["Exklusion"] = "";
+                        }
+
 
                         if ((string)row["Inklusion"] != ""&& (string)row["Inklusion"]!=null)
                         {
