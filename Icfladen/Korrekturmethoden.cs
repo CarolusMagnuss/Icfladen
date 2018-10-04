@@ -69,16 +69,16 @@ namespace Icfladen
                     switch (GSOID[10])
                     {
                         case '1':
-                            row["Pfad"] = GsOidA + '2' + GsOidE;
+                            row["Pfad"] = GsOidA + "2" + GsOidE;
                             break;
                         case '2':
-                            row["Pfad"] = GsOidA + '4' + GsOidE;
+                            row["Pfad"] = GsOidA + "4" + GsOidE;
                             break;
                         case '3':
-                            row["Pfad"] = GsOidA + '1' + GsOidE;
+                            row["Pfad"] = GsOidA + "1" + GsOidE;
                             break;
                         case '4':
-                            row["Pfad"] = GsOidA + '3' + GsOidE;
+                            row["Pfad"] = GsOidA + "3" + GsOidE;
                             break;
                     }
                     row.EndEdit();

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
+using System.IO;
 
 namespace Icfladen
 
@@ -47,11 +48,11 @@ namespace Icfladen
                     XmlNodeList Addendum = Aktiver.SelectSingleNode(EinträgeOriginal[6], nsmgr).ChildNodes;
                     int AnzahlZusatz = Addendum.Count;
                     if (AnzahlZusatz == 1)
-                    {   
+                    {
 
                         if ((row.IsNull("Inklusion") == true))
                         {
-                            row["Inklusion"]= "";
+                            row["Inklusion"] = "";
                         }
                         if ((row.IsNull("Exklusion") == true))
                         {
@@ -59,7 +60,7 @@ namespace Icfladen
                         }
 
 
-                        if ((string)row["Inklusion"] != ""&& (string)row["Inklusion"]!=null)
+                        if ((string)row["Inklusion"] != "" && (string)row["Inklusion"] != null)
                         {
                             Addendum[0].LastChild.InnerText = (string)row["Inklusion"];
                         }
@@ -129,14 +130,14 @@ namespace Icfladen
             nsmgr.AddNamespace("xmlns:i", "http://www.w3.org/2001/XMLSchema-instance");
 
 
-            XmlElement root=doc.CreateElement("GenericResultContainerOfArrayOfClassificationObjectrBvg5i8m");
+            XmlElement root = doc.CreateElement("GenericResultContainerOfArrayOfClassificationObjectrBvg5i8m");
             doc.AppendChild(root);
             doc.DocumentElement.SetAttribute("xmlns", "http://schemas.datacontract.org/2004/07/Geronto.Framework.Common.Portable");
             doc.DocumentElement.SetAttribute("xmlns:z", "http://schemas.microsoft.com/2003/10/Serialization/");
             doc.DocumentElement.SetAttribute("z:id", "i1");
             doc.DocumentElement.SetAttribute("xmlns:i", "http://www.w3.org/2001/XMLSchema-instance");
 
-            newElem=doc.CreateElement("Exception");
+            newElem = doc.CreateElement("Exception");
             root.AppendChild(newElem);
             newElem.SetAttribute("xmlns:d2p1", "http://schemas.datacontract.org/2004/07/System");
             newElem.SetAttribute("i:nil", "true");
@@ -151,12 +152,12 @@ namespace Icfladen
 
             newElem = doc.CreateElement("ValidCode");
             root.AppendChild(newElem);
-            newElem.InnerText = "Ok";            
+            newElem.InnerText = "Ok";
 
             foreach (DataRow row in Zeilen)
             {
                 newElem = doc.CreateElement("ClassificationObject");
-                newElem.Prefix="d2p1";
+                newElem.Prefix = "d2p1";
                 root.FirstChild.NextSibling.NextSibling.AppendChild(newElem);
 
                 XmlNode aktiver = newElem;
@@ -165,7 +166,7 @@ namespace Icfladen
                 newElem.SetAttribute("i:nil", "true");
                 aktiver.AppendChild(newElem);
 
-                newElem = doc.CreateElement("d2p1", "Codesystem","");
+                newElem = doc.CreateElement("d2p1", "Codesystem", "");
                 newElem.SetAttribute("i:nil", "true");
                 aktiver.AppendChild(newElem);
 
@@ -173,34 +174,34 @@ namespace Icfladen
                 newElem.SetAttribute("xmlns:d4p1", "http://schemas.datacontract.org/2004/07/Geronto.Framework.Data.Foundation.Model.V1");
                 aktiver.AppendChild(newElem);
 
-                newElem = doc.CreateElement("d2p1", "DisplayTexts","");
+                newElem = doc.CreateElement("d2p1", "DisplayTexts", "");
                 newElem.SetAttribute("xmlns:d4p1", "http://schemas.datacontract.org/2004/07/Geronto.Framework.Data.Foundation.Model.V1");
                 aktiver.AppendChild(newElem);
 
-                newElem = doc.CreateElement("d2p1", "GsOid","");
-                newElem.InnerText=((string)row["Pfad"]);
+                newElem = doc.CreateElement("d2p1", "GsOid", "");
+                newElem.InnerText = ((string)row["Pfad"]);
                 aktiver.AppendChild(newElem);
 
-                newElem = doc.CreateElement("d2p1", "Id","");
+                newElem = doc.CreateElement("d2p1", "Id", "");
                 newElem.InnerText = ((string)row["OldId"]);
                 aktiver.AppendChild(newElem);
 
-                newElem = doc.CreateElement("d2p1", "Options","");
+                newElem = doc.CreateElement("d2p1", "Options", "");
                 newElem.SetAttribute("xmlns:d4p1", "http://schemas.datacontract.org/2004/07/Geronto.Framework.Data.Foundation.Model.V1");
                 aktiver.AppendChild(newElem);
 
-                newElem = doc.CreateElement("d2p1", "ParentGsOid","");
+                newElem = doc.CreateElement("d2p1", "ParentGsOid", "");
                 newElem.InnerText = ((string)row["AhnPfad"]);
                 if (newElem.InnerText == "")
-                    { newElem.SetAttribute("i:nil", "true"); }
+                { newElem.SetAttribute("i:nil", "true"); }
                 aktiver.AppendChild(newElem);
 
-                newElem = doc.CreateElement("d2p1", "ShortNames","");
+                newElem = doc.CreateElement("d2p1", "ShortNames", "");
                 newElem.SetAttribute("xmlns:d4p1", "http://schemas.datacontract.org/2004/07/Geronto.Framework.Data.Foundation.Model.V1");
                 aktiver.AppendChild(newElem);
 
                 //ClassificationObjects zweite Ebene
-                                
+
                 //XmlNode Laufnode;                
                 //Laufnode = aktiver.SelectSingleNode(".//d2p1:DescriptionTexts", nsmgr);
 
@@ -324,6 +325,129 @@ namespace Icfladen
             doc.PreserveWhitespace = true;
             doc.Save("Struktur.xml");
 
+        }
+
+        // Erstellt csv-Datei für eine TreeMap in R
+
+        private void CreateTreeMapTable()
+        {
+            TreemapTable = Tabelle.Copy();
+
+            AddLevelColumns(TreemapTable);
+
+            DataRowCollection MapRows = TreemapTable.Rows;
+            foreach ( DataRow row1 in MapRows)
+            {
+                string Row1Title = (string)row1["Titel"];
+                string Row1Pfad = (string)row1["Pfad"];
+                int Row1Ebene = GetEbenefromPath(Row1Pfad);
+
+                foreach(DataRow row2 in MapRows)
+                {
+                    string Row2Title = (string)row2["Titel"];
+                    string Row2Pfad = (string)row2["Pfad"];
+                    int Row2Ebene = GetEbenefromPath(Row2Pfad);
+
+                    if (Row2Pfad.Length >= Row1Pfad.Length)
+                    {
+                        if (Row2Pfad.Substring(0, Row1Pfad.Length) == Row1Pfad)
+                        {
+                            row2[Row1Ebene + 9] = Row1Title;
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < TreemapTable.Rows.Count; i++)
+            {
+                for (int j = 0; j < TreemapTable.Columns.Count; j++)
+                {
+                    if (TreemapTable.Rows[i][j] != null && string.IsNullOrEmpty(TreemapTable.Rows[i][j].ToString()))
+                    {
+                        TreemapTable.Rows[i][j] = "";
+                    }
+                }
+            }
+        }
+
+        private int GetEbenefromPath(string Pfad)
+        {
+            char[] Path = Pfad.ToCharArray();
+            int Ebene = -2;
+            foreach(char C in Path)
+            {
+                if (C=='.')
+                {
+                    Ebene++;
+                }
+            }
+            return Ebene;
+        }
+
+        private void AddLevelColumns (DataTable AmendingTable)
+            {
+            DataColumn column;
+            column = new DataColumn()
+            {
+                DataType = Type.GetType("System.String"),
+                ColumnName = "Domäne",
+                ReadOnly = false,
+                Unique = false
+            };
+            AmendingTable.Columns.Add(column);
+            column = new DataColumn()
+            {
+                DataType = Type.GetType("System.String"),
+                ColumnName = "Kapitel",
+                ReadOnly = false,
+                Unique = false
+            };
+            AmendingTable.Columns.Add(column);
+            column = new DataColumn()
+            {
+                DataType = Type.GetType("System.String"),
+                ColumnName = "Block",
+                ReadOnly = false,
+                Unique = false
+            };
+            AmendingTable.Columns.Add(column);
+            column = new DataColumn()
+            {
+                DataType = Type.GetType("System.String"),
+                ColumnName = "Ebene 4",
+                ReadOnly = false,
+                Unique = false
+            };
+            AmendingTable.Columns.Add(column);
+            column = new DataColumn()
+            {
+                DataType = Type.GetType("System.String"),
+                ColumnName = "Ebene 5",
+                ReadOnly = false,
+                Unique = false
+            };
+            AmendingTable.Columns.Add(column);
+            column = new DataColumn()
+            {
+                DataType = Type.GetType("System.String"),
+                ColumnName = "Ebene 6",
+                ReadOnly = false,
+                Unique = false
+            };
+            AmendingTable.Columns.Add(column);
+        }
+        
+   
+        private void SaveAsCSV(DataTable MapTable)
+        {
+            StringBuilder TableToText= new StringBuilder("Titel ; Code ; Domäne; Kapitel; Block; Ebene 4; Ebene 5; Ebene 6");
+            TableToText.AppendLine();
+            DataRowCollection MapRows = TreemapTable.Rows;
+            foreach(DataRow row in MapRows)
+            {
+                string entry = (string)row["Titel"] + ';' + (string)row["Code"] + ';' + (string)row[10] + ';' + (string)row[11] + ';' + (string)row[12] + ';' + (string)row[13] + ';' + (string)row[14] + ';' + (string)row[15];
+                TableToText.AppendLine(entry);
+            }
+            File.WriteAllText("TreeMapTable.txt", TableToText.ToString());
         }
     }
 

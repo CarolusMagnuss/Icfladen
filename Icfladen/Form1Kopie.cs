@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
+using System.IO;
 
 
 namespace Icfladen
@@ -59,6 +60,7 @@ namespace Icfladen
         int LetzedierteZeile;
 
         DataTable Tabelle = new DataTable("Klassifikationsobjekte");
+        DataTable TreemapTable = new DataTable(" Treemaptabelle");
 
         private void MakeTable() // Tabelle für die ICF Klassifikationsobjekte erschaffen.
         {
@@ -173,11 +175,12 @@ namespace Icfladen
             nsmgr.AddNamespace("d4p1", "http://schemas.datacontract.org/2004/07/Geronto.Framework.Data.Foundation.Model.V1");
 
             switch (Datei)
-            {   case "\\Struktur.xml":
+            {
+                case "\\Struktur.xml":
                     Ausgabe.Text = root.FirstChild.NextSibling.NextSibling.FirstChild.Name;
                     //Aktiver = root.SelectSingleNode("//ClassificationObject",nsmgr);
-                    Aktiver= root.FirstChild.NextSibling.NextSibling.FirstChild;
-                    Ausgabe.Text = Aktiver.Name+" "+Aktiver.LocalName+ " " + Aktiver.Prefix+  " " + Aktiver.NamespaceURI;
+                    Aktiver = root.FirstChild.NextSibling.NextSibling.FirstChild;
+                    Ausgabe.Text = Aktiver.Name + " " + Aktiver.LocalName + " " + Aktiver.Prefix + " " + Aktiver.NamespaceURI;
                     //Aktiver = root.SelectSingleNode(EinträgeONS[0], nsmgr);
 
                     //for (int k = 0; k < 1602; k++)
@@ -211,8 +214,8 @@ namespace Icfladen
                     //    Aktiver = Aktiver.NextSibling;
                     //}
                     break;
-                case "\\ICFneu.xml":                   
-                    
+                case "\\ICFneu.xml":
+
                     Aktiver = root.SelectSingleNode(EinträgeOriginal[0], nsmgr);
                     Ausgabe.Text = Aktiver.Name + " " + Aktiver.LocalName + " " + Aktiver.Prefix + " " + Aktiver.NamespaceURI;
                     for (int k = 0; k < 1602; k++)
@@ -245,9 +248,12 @@ namespace Icfladen
                         Tabelle.Rows.Add(row);
                         Aktiver = Aktiver.NextSibling;
                     }
+                    //ShiftChapterS2();
+                    Addi520();
+                    Delete838();
                     break;
 
-                case "\\data.xml":                    
+                case "\\data.xml":
                     Ausgabe.Text = root.SelectSingleNode("//Speicher").InnerText;
                     Aktiver = root.SelectSingleNode(EinträgeNeu[0]);
 
@@ -273,112 +279,150 @@ namespace Icfladen
 
 
 
-            private void Populate() //Nutzt die Daten der Tabelle zur Erstellung der Knoten im ICF TreeView.
+        private void Populate() //Nutzt die Daten der Tabelle zur Erstellung der Knoten im ICF TreeView.
+        {
+            DataRow[] Zeilen = Tabelle.Select();
+            int[] Pfadnummern = new int[] { 0, 0, 0, 0, 0, 0 };
+
+            DataRow rowa = Zeilen[0];
+
+            foreach (DataRow row in Zeilen)
             {
-                DataRow[] Zeilen = Tabelle.Select();
-                int[] Pfadnummern = new int[] { 0, 0, 0, 0, 0, 0 };
+                string GSOID = (string)row["Pfad"];
+                int Ebene = (GSOID.Length - 5) / 2;
 
-                DataRow rowa = Zeilen[0];
-
-                foreach (DataRow row in Zeilen)
+                for (int t = 0; t < (Ebene - 1); t++)
                 {
-                    string GSOID = (string)row["Pfad"];
-                    int Ebene = (GSOID.Length - 5) / 2;
-
-                    for (int t = 0; t < (Ebene - 1); t++)
-                    {
-                        Pfadnummern[t] = (int)char.GetNumericValue(GSOID[(((t + 1) * 2) + 4)]);
-                    }
-
-                    //Ausgabe.Text = GSOID + Pfadnummern[1].ToString() + Pfadnummern[2].ToString() + Pfadnummern[3].ToString()+ Pfadnummern[4].ToString() + Pfadnummern[5].ToString()+" "+ GSOID;
-
-                    switch (Ebene)
-                    {
-                        case 1:
-                            ICFTree.Nodes.Add((string)row["Titel"]);
-                            break;
-                        case 2:
-                            ICFTree.Nodes[(Pfadnummern[0] - 1)].Nodes.Add((string)row["Titel"]);
-                            break;
-                        case 3:
-                            ICFTree.Nodes[(Pfadnummern[0] - 1)].Nodes[(Pfadnummern[1] - 1)].Nodes.Add((string)row["Code"] + " " + (string)row["Titel"]);
-                            break;
-                        case 4:
-                            ICFTree.Nodes[(Pfadnummern[0] - 1)].Nodes[(Pfadnummern[1] - 1)].Nodes[(Pfadnummern[2] - 1)].Nodes.Add((string)row["Code"] + " " + (string)row["Titel"]);
-                            break;
-                        case 5:
-                            ICFTree.Nodes[(Pfadnummern[0] - 1)].Nodes[(Pfadnummern[1] - 1)].Nodes[(Pfadnummern[2]) - 1].Nodes[(Pfadnummern[3] - 1)].Nodes.Add((string)row["Code"] + " " + (string)row["Titel"]);
-                            break;
-                        case 6:
-                            ICFTree.Nodes[(Pfadnummern[0] - 1)].Nodes[(Pfadnummern[1] - 1)].Nodes[(Pfadnummern[2]) - 1].Nodes[(Pfadnummern[3]) - 1].Nodes[(Pfadnummern[4] - 1)].Nodes.Add((string)row["Code"] + " " + (string)row["Titel"]);
-                            break;
-                    }
-                }
-            }
-
-            private void TabellenUI()
-            {
-                ICFTabelle.Columns[0].Width = 40;
-                ICFTabelle.Columns[1].Width = 350;
-                ICFTabelle.Columns[2].Width = 350;
-                ICFTabelle.Columns[3].Width = 80;
-                ICFTabelle.Columns[4].Width = 100;
-                ICFTabelle.Columns[5].Width = 100;
-            }//Spaltenbreiten der Tabelle
-
-            private void LadeButton_Click(object sender, EventArgs e)// Datei in alter Formattierung speichern
-            {
-                SpeichernAlt();
-            }
-
-            private void Ansichtwechsel_Click(object sender, EventArgs e)
-            {
-                if (ICFTabelle.Visible == false)
-                {
-                    ICFTabelle.Visible = true;
-                    ICFTree.Visible = false;
-                }
-                else
-                {
-                    ICFTabelle.Visible = false;
-                    ICFTree.Visible = true;
-                }
-            }//Wechselt zwischen Treeviewansicht und GridViewAnsicht
-
-            private void Save_Click(object sender, EventArgs e)
-            {
-                SpeichernNeu();
-
-            } //speichert die Bearbeitete Tabelle in die data.xml
-
-            private void ICFTabelle_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-            {
-                Point Adresse = ICFTabelle.CurrentCellAddress;
-                LetzedierteZeile = Adresse.Y;
-                Ausgabe.Text = LetzedierteZeile.ToString();
-
-            }
-
-            private void ICFTabelle_CurrentCellChanged(object sender, EventArgs e)
-            {
-                if (ICFTabelle.CurrentCell != null)
-                {
-                    EdierBox.Text = ICFTabelle.CurrentCell.Value.ToString();
+                    Pfadnummern[t] = (int)char.GetNumericValue(GSOID[(((t + 1) * 2) + 4)]);
                 }
 
+                //Ausgabe.Text = GSOID + Pfadnummern[1].ToString() + Pfadnummern[2].ToString() + Pfadnummern[3].ToString()+ Pfadnummern[4].ToString() + Pfadnummern[5].ToString()+" "+ GSOID;
+
+                switch (Ebene)
+                {
+                    case 1:
+                        ICFTree.Nodes.Add((string)row["Titel"]);
+                        break;
+                    case 2:
+                        ICFTree.Nodes[(Pfadnummern[0] - 1)].Nodes.Add((string)row["Titel"]);
+                        break;
+                    case 3:
+                        ICFTree.Nodes[(Pfadnummern[0] - 1)].Nodes[(Pfadnummern[1] - 1)].Nodes.Add((string)row["Code"] + " " + (string)row["Titel"]);
+                        break;
+                    case 4:
+                        ICFTree.Nodes[(Pfadnummern[0] - 1)].Nodes[(Pfadnummern[1] - 1)].Nodes[(Pfadnummern[2] - 1)].Nodes.Add((string)row["Code"] + " " + (string)row["Titel"]);
+                        break;
+                    case 5:
+                        ICFTree.Nodes[(Pfadnummern[0] - 1)].Nodes[(Pfadnummern[1] - 1)].Nodes[(Pfadnummern[2]) - 1].Nodes[(Pfadnummern[3] - 1)].Nodes.Add((string)row["Code"] + " " + (string)row["Titel"]);
+                        break;
+                    case 6:
+                        ICFTree.Nodes[(Pfadnummern[0] - 1)].Nodes[(Pfadnummern[1] - 1)].Nodes[(Pfadnummern[2]) - 1].Nodes[(Pfadnummern[3]) - 1].Nodes[(Pfadnummern[4] - 1)].Nodes.Add((string)row["Code"] + " " + (string)row["Titel"]);
+                        break;
+                }
+            }
+        }
+
+        private void TabellenUI()
+        {
+            ICFTabelle.Columns[0].Width = 40;
+            ICFTabelle.Columns[1].Width = 350;
+            ICFTabelle.Columns[2].Width = 350;
+            ICFTabelle.Columns[3].Width = 80;
+            ICFTabelle.Columns[4].Width = 100;
+            ICFTabelle.Columns[5].Width = 100;
+        }//Spaltenbreiten der Tabelle
+
+        private void LadeButton_Click(object sender, EventArgs e)// Datei in alter Formattierung speichern
+        {
+            SpeichernAlt();
+        }
+
+        private void Ansichtwechsel_Click(object sender, EventArgs e)
+        {
+            if (ICFTabelle.Visible == false)
+            {
+                ICFTabelle.Visible = true;
+                ICFTree.Visible = false;
+            }
+            else
+            {
+                ICFTabelle.Visible = false;
+                ICFTree.Visible = true;
+            }
+        }//Wechselt zwischen Treeviewansicht und GridViewAnsicht
+
+        private void Save_Click(object sender, EventArgs e)
+        {
+            SpeichernNeu();
+
+        } //speichert die Bearbeitete Tabelle in die data.xml
+
+        private void ICFTabelle_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            Point Adresse = ICFTabelle.CurrentCellAddress;
+            LetzedierteZeile = Adresse.Y;
+            Ausgabe.Text = LetzedierteZeile.ToString();
+
+        }
+
+        private void ICFTabelle_CurrentCellChanged(object sender, EventArgs e)
+        {
+            if (ICFTabelle.CurrentCell != null)
+            {
+                EdierBox.Text = ICFTabelle.CurrentCell.Value.ToString();
             }
 
-            private void Change_Click(object sender, EventArgs e)
-            {
-                ICFTabelle.CurrentCell.Value = EdierBox.Text;
-            }
+        }
 
-            private void FillTree_Click(object sender, EventArgs e)
+        private void Change_Click(object sender, EventArgs e)
+        {
+            ICFTabelle.CurrentCell.Value = EdierBox.Text;
+        }
+
+        private void FillTree_Click(object sender, EventArgs e)
+        {
+            
+            //Delete838();
+            //Addi520();
+            DataRow[] Zeilen = Tabelle.Select();
+            int[] Pfadnummern = new int[] { 0, 0, 0, 0, 0, 0 };
+
+            DataRow row = Tabelle.Rows.Find(167);
+
+
+            string GSOID = (string)row["Pfad"];
+                int Ebene = (GSOID.Length - 5) / 2;
+
+                for (int t = 0; t < (Ebene - 1); t++)
+                {
+                    Pfadnummern[t] = (int)char.GetNumericValue(GSOID[(((t + 1) * 2) + 4)]);
+                }
+            Ausgabe.Text = string.Join(";", Pfadnummern)+ " "+ (string)row["Titel"]+ " " + (string)row["Pfad"];
+
+            ShiftChapterS2();
+
+            Zeilen = Tabelle.Select();
+            Pfadnummern = new int[] { 0, 0, 0, 0, 0, 0 };
+
+            row = Tabelle.Rows.Find(167);
+
+
+            GSOID = (string)row["Pfad"];
+            Ebene = (GSOID.Length - 5) / 2;
+
+            for (int t = 0; t < (Ebene - 1); t++)
             {
-                ShiftChapterS2();
-                //Delete838();
-                Addi520();
+                Pfadnummern[t] = (int)char.GetNumericValue(GSOID[(((t + 1) * 2) + 4)]);
             }
+            Ausgabe.Text =Ausgabe.Text + "\r\n" + string.Join(";", Pfadnummern) + " " + (string)row["Titel"] + " " + (string)row["Pfad"];
+        }
+
+        private void CSV_Click(object sender, EventArgs e)
+        {
+            
+            CreateTreeMapTable();
+            ICFTabelle.DataSource = TreemapTable;
+            SaveAsCSV(TreemapTable);
+        }
     }
 }
-
